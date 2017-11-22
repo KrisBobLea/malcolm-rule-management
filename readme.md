@@ -4,15 +4,15 @@
 
  Malcolm Rules is a complex rules description structure based on Json.
 
-###  features:
+###  Features:
  
-- unlimited group
+- Unlimited group
 
-- unlimited level
+- Unlimited level
 
-- unlimited restriction
+- Unlimited restriction
 
-### scenes to be used
+### Scenes to be used
 Risk control, online activities, points issued and other systems need to flexibly configure the complex rules.
 
 ## How about Malcolm Rules Json looks like?
@@ -44,7 +44,7 @@ Risk control, online activities, points issued and other systems need to flexibl
 }
 ```
 ## Why named Malcolm Rule Structure?
-because of the band AC\DC's guitarist Malcolm Young.
+Because of the band AC\DC's guitarist Malcolm Young.
 
 ## How to use this editor?
 This editor just is a example, you need merge this code to your project.
