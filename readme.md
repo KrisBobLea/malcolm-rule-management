@@ -1,20 +1,23 @@
-#Malcolm Rules Editor
+# Malcolm Rules Editor
 
-**What is Malcolm Rules?**
+## What is Malcolm Rules?
 
- Malcolm Rules is a complex rules description structure base on Json.
+ Malcolm Rules is a complex rules description structure based on Json.
+
+###  features:
  
- **features:**
- 
-1.unlimited group
+- unlimited group
 
-2.unlimited level
+- unlimited level
 
-3.unlimited restriction
- 
-**How about Malcolm Rules Json looks like?**
+- unlimited restriction
 
-```
+### scenes to be used
+Risk control, online activities, points issued and other systems need to flexibly configure the complex rules.
+
+## How about Malcolm Rules Json looks like?
+
+```json
 {
     "type": "subrules",
     "logic": "and",
@@ -39,3 +42,9 @@
         }
     ]
 }
+```
+## Why named Malcolm Rule Structure?
+because of the band AC\DC's guitarist Malcolm Young.
+
+## How to use this editor?
+This editor just is a example, you need merge this code to your project.
