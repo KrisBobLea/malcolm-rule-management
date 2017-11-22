@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Malcolm Rules Management System</title>
+
+    <link rel="stylesheet" type="text/css" href="assets/layui/css/layui.css"/>
+    <script type="text/javascript" src="assets/layui/layui.js"></script>
+    <script type="text/javascript" src="assets/jquery/js/jquery-3.2.1.min.js"></script>
+    <style>
+        .J_container_subrules {
+            z-index: 1;
+            min-height: 40px;
+            margin-right: 10px;
+            margin-bottom: 20px;
+            border: grey dashed 0.5px;
+        }
+
+        .J_container_subrules_options {
+            margin-right: 10px;
+            /*border-top: grey dashed 0.5px;*/
+        }
+
+        .limit-input {
+            width: 90px;
+        }
+
+        .rule_delete_btn {
+            float: right;
+            margin: 5px;
+            position: relative;
+            margin-top: -36px;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            padding: 0 3px;
+        }
+    </style>
+
+</head>
+<body>
+
+
+<div id="rule-content" style="width:980px;margin:20px 20px 0 20px;">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>Rules Management</legend>
+    </fieldset>
+    <div>
+
+        <div class="layui-collapse J_container_rules">
+
+        </div>
+        <div class="layui-form-item" style="margin-top: 20px;">
+            <div class="layui-input-block">
+                <i class="layui-btn layui-btn-radius layui-btn-normal J_add_rule">New Rule</i>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+<script type="text/html" class="J_tpl_subrule">
+    <div class="layui-colla-item J_append_item layui-anim layui-anim-upbit" id="sub-rule-{{ d.index }}"
+         data-rule-index="{{ d.index }}" data-rule-parent-index="{{ d.parentIndex }}">
+        <h2 class="layui-colla-title layui-bg-green"><span
+                rule-desc-index="{{ d.index }}">{{ d.level }} level restriction</span> ({{ d.index }})</h2>
+        <button class="layui-btn layui-btn-small layui-btn-radius layui-btn-primary   rule_delete_btn">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
+        <!--        <div class="layui-colla-content">-->
+        <div class="layui-colla-content layui-show">
+            <input type="hidden" name="{{ d.index }}[type]" data-rule-index="{{ d.index }}"
+                   data-rule-name="type"
+                   value="restriction">
+            <div class="layui-form-item">
+                <div class="layui-input-inline" style="width: 100%">
+                    <input type="text" name="introduce[{{ d.index }}]" data-rule-index="{{ d.index }}"
+                           data-rule-name="introduce" value="{{d.introduce || ''}}" lay-verify="title"
+                           autocomplete="off" placeholder="description" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <select name="{{ d.index }}[factorId]" data-rule-index="{{ d.index }}" lay-ignore
+                                class="layui-input layui-unselect"
+                                data-rule-name="factorId">
+                            <option value="">Factor ID</option>
+                            {{# layui.each(d.factorList, function(index, factor){ }}
+                            <option value="{{ factor._id.$id }}">{{ factor.eventId }}</option>
+                            {{# }); }}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline">
+                        <select name="{{ d.index }}[logicOperator]" lay-verify="required"
+                                lay-filter="logicOperator" lay-ignore
+                                class="logicOperator layui-input layui-unselect"
+                                data-rule-index="{{ d.index }}" data-rule-name="logicOperator">
+                            <option value="0">Operator</option>
+                            <option value="equal">equal</option>
+                            <option value="between">between</option>
+                            <option value="notbetween">notbetween</option>
+                            <option value="greaterThan">greaterThan</option>
+                            <option value="lessThan">lessThan</option>
+                            <option value="greaterEqualThan">greaterEqualThan</option>
+                            <option value="lessEqualThan">lessEqualThan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <input type="text" name="leftLimit[{{ d.index }}]" data-rule-index="{{ d.index }}"
+                           data-rule-name="leftLimit" value="{{d.leftLimit || ''}}"
+                           placeholder="Limit" class="layui-input limit-input">
+                </div>
+                <div class="layui-inline">
+                    <input name="rightLimit[{{ d.index }}]" type="hidden" data-rule-index="{{ d.index }}"
+                           data-rule-name="rightLimit" value="{{d.rightLimit || ''}}"
+                           placeholder="Right Limit" class="layui-input limit-input">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/html" class="J_tpl_subrules">
+    <div class="layui-colla-item J_append_item sub-rules layui-anim layui-anim-upbit"
+         id="sub-rule-{{ d.index }}"
+         data-rule-index="{{ d.index }}" data-rule-parent-index="{{ d.parentIndex }}">
+        <h2 class="layui-colla-title layui-bg-gray">
+            {{ d.level }} level sub rules ({{ d.index }})</h2>
+        <button class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger rule_delete_btn">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
+        <div class="layui-colla-content layui-show">
+            <input type="hidden" name="{{ d.index }}[type]" data-rule-index="{{ d.index }}"
+                   data-rule-name="type"
+                   value="subrules">
+            <div class=" J_append_item">
+                <div class="layui-form-item J_container_subrules_options">
+                    <label class="layui-form-label">Logic</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="logic[{{ d.index }}]" data-rule-index="{{ d.index }}"
+                               data-rule-name="logic" value="and" title="AND" checked="">
+                        <input type="radio" name="logic[{{ d.index }}]" data-rule-index="{{ d.index }}"
+                               data-rule-name="logic" value="or" title="OR">
+                    </div>
+                </div>
+
+                <div class="layui-collapse J_container_subrules" style="margin-left: 10px;"
+                     data-rule-level="{{ d.level }}" data-rule-index="{{ d.index }}"
+                     data-rule-next-index="1">
+
+                </div>
+
+                <div class="layui-form-item layui-input-block">
+                    <div class="layui-input-inline">
+                        <i class="layui-btn layui-btn-radius layui-btn-normal J_add_subrule">New Restriction</i>
+                    </div>
+                    {{# if(d.level != 3){ }}
+                    <!--If you do not want limit the level to 3, comment condition line-->
+                    <div class="layui-input-inline">
+                        <i class="layui-btn layui-btn-radius layui-btn-warm J_add_subrules">New Sub Rules</i>
+                    </div>
+                    {{# } }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/html" class="J_tpl_rule">
+    <div class="layui-colla-item J_append_item" id="rule-{{d.index}}" data-rule-type="rule">
+        <h2 class="layui-colla-title">
+            {{d.name}}</h2>
+        <button class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger rule_delete_btn">
+            <i class="layui-icon">&#xe640;</i>
+        </button>
+        <div class="layui-colla-content layui-show">
+            <form class="layui-form" method="post" action="api/RuleSave">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Rule Name</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" lay-verify="required|title" autocomplete="off"
+                               placeholder="Rule Title" class="layui-input" value="{{d.name}}">
+                    </div>
+                </div>
+                <input type="hidden" name="_id" class="_id" id="_id_{{d.index}}"
+                       data-rule-index="{{d.index}}" value="{{ d._id.$id }}">
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">Rule Score</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="score" lay-verify="required|number" autocomplete="off"
+                                   class="layui-input" placeholder="30" value="{{d.score}}">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" id="sub-rule-1" data-rule-index="1">
+                    <label class="layui-form-label">Rule</label>
+                    <div class="sub-rules">
+                        <input type="hidden" name="1[type]" data-rule-index="1" data-rule-name="type"
+                               value="subrules">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Logic</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="1[logic]" data-rule-index="1"
+                                       data-rule-name="logic"
+                                       value="and" title="AND" checked="">
+                                <input type="radio" name="1[logic]" data-rule-index="1"
+                                       data-rule-name="logic"
+                                       value="or" title="OR">
+                            </div>
+                        </div>
+
+                        <div class="layui-collapse layui-input-block J_container_subrules"
+                             data-rule-level="1"
+                             data-rule-index="1" data-rule-parent-index="0" data-rule-next-index="1">
+
+                        </div>
+
+                        <div class="layui-form-item layui-input-block">
+                            <div class="layui-input-inline">
+                                <i class="layui-btn layui-btn-radius layui-btn-normal J_add_subrule">New Restriction</i>
+                            </div>
+                            <div class="layui-input-inline">
+                                <i class="layui-btn layui-btn-radius layui-btn-warm J_add_subrules">New Sub Rules</i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <textarea hidden id="subRules" name="subRules"></textarea>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Status</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" checked="" name="state" lay-skin="switch"
+                               lay-filter="switchTest"
+                               lay-text="ON|OFF">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn J_save" lay-submit="" lay-filter="rule">Submit</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">Reset</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</script>
+
+<script>
+    layui.use(['jquery', 'form', 'layer', 'laytpl', 'element'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , laytpl = layui.laytpl
+            , element = layui.element
+            , layer = layui.layer;
+
+        var $ruleTpl = laytpl($('.J_tpl_rule').html());
+        var $subRuleTpl = laytpl($('.J_tpl_subrule').html());
+        var $subRulesTpl = laytpl($('.J_tpl_subrules').html());
+        var $ruleRefreshBtn = $(".J_rule_refresh");
+        var ruleIndex = 0;
+        var $ruleObject = {
+            "_id": {$id: ""},
+            "strategyId": "",
+            "state": "on",
+            "name": "New Rule Name",
+            "score": "",
+            "subRules": [{"type": "subrules", "logic": "and", "subrules": []}]
+        };
+        $factorList = [
+            {
+                "eventId": "login_info_count",
+                "valid": true,
+                "_id": {
+                    "$id": "59ca09d131956082110041a7"
+                }
+            },
+            {
+                "eventId": "device amount",
+                "valid": true,
+                "_id": {
+                    "$id": "59ca0a9431956082110041a9"
+                }
+            },
+            {
+                "eventId": "mistaken_user_passwd_count",
+                "valid": true,
+                "_id": {
+                    "$id": "59cb754b61a5396edb381983"
+                }
+            },
+            {
+                "eventId": "registered days",
+                "valid": true,
+                "_id": {
+                    "$id": "59cb75a161a5396ee149dac5"
+                }
+            },
+            {
+                "eventId": "user points",
+                "valid": true,
+                "_id": {
+                    "$id": "59cc96fc61a5396ee4234a43"
+                }
+            }
+        ];
+
+        //  Rules JSON to UI
+        function appendRule(ruleObj) {
+            ruleIndex++;
+            let $container = $('.J_container_rules');
+            if (!ruleObj) {
+                $container.append($ruleTpl.render($.extend({index: ruleIndex}, $ruleObject)));
+            } else {
+                $ruleDom = $($ruleTpl.render($.extend({index: ruleIndex}, ruleObj)));
+                $ruleDom.find('.layui-show').removeClass("layui-show");
+                $container.append($ruleDom);
+                extendSubRuleJson(ruleIndex, null, 1, ruleObj.subRules);
+            }
+            form.render();
+            element.init();
+            freshListener();
+        }
+
+        function extendSubRulesArr(ruleIndex, subRulesArr, parentIndex) {
+            if (typeof subRulesArr === 'undefined') return null;
+            console.log(subRulesArr);
+            subRulesArr.forEach(function (subrule, subRuleIndex, p3) {
+                subRuleIndex++;
+                extendSubRuleJson(ruleIndex, parentIndex, subRuleIndex, subrule);
+            });
+        }
+
+        function extendSubRuleJson(ruleIndex, subRuleParentIndex, subRuleIndex, subRuleObj) {
+            let $ruleContainer = $("#rule-" + ruleIndex);
+            if (!subRuleParentIndex) {
+                console.log(subRuleObj.logic);
+                $ruleContainer.find("[data-rule-index='1'][data-rule-name='logic'][value='" + subRuleObj.logic + "']").prop("checked", true);
+                extendSubRulesArr(ruleIndex, subRuleObj.subrules, "1");
+                return null;
+            }
+
+            type = subRuleObj.type;
+            let $parentRulesContainer = $ruleContainer.find(".J_container_subrules[data-rule-index='" + subRuleParentIndex + "']");
+            //管理level
+            let $level = (subRuleParentIndex.split(".")).length - 1;
+            $level++;
+            //管理index
+            $subIndex = subRuleParentIndex + '.' + subRuleIndex;
+            let $nextIndex = ++subRuleIndex;
+            let $parentIndex = subRuleParentIndex;
+            $parentRulesContainer.attr("data-rule-next-index", $nextIndex);
+            $tpl = (type === 'restriction') ? $subRuleTpl : $subRulesTpl;
+
+            $renderData = $.extend({
+                index: $subIndex,
+                parentIndex: $parentIndex,
+                level: $level,
+                factorList: $factorList
+            }, subRuleObj);
+            $parentRulesContainer.append($tpl.render($renderData));
+            form.render();
+            element.init();
+            freshListener();
+            //  在刷新监听者之后填充非input控件
+            if (type === 'subrules') {
+                $ruleContainer.find("[data-rule-index='" + $subIndex + "'][data-rule-name='logic'][value='" + subRuleObj.logic + "']").prop("checked", true);
+                extendSubRulesArr(ruleIndex, subRuleObj.subrules, $subIndex);
+            } else {
+                $ruleContainer.find("[data-rule-index='" + $subIndex + "'][data-rule-name='factorId']").val(subRuleObj.factorId);
+                $ruleContainer.find("[data-rule-index='" + $subIndex + "'][data-rule-name='logicOperator']").val(subRuleObj.logicOperator);
+                if (subRuleObj.logicOperator === "between" || subRuleObj.logicOperator === "notbetween") {
+                    $ruleContainer.find("[data-rule-index='" + $subIndex + "'][data-rule-name='rightLimit']").attr("type", "text");
+                }
+                //设置单级规则title
+                let spanDom = $ruleContainer.find("[rule-desc-index='" + $subIndex + "']").attr("type", "text");
+                let spanVal = $ruleContainer.find("[data-rule-index='" + $subIndex + "'][data-rule-name='introduce']").val();
+                if (spanVal) {
+                    spanDom.text(spanVal);
+                }
+            }
+        }
+
+        //  UI to Rules JSON
+        function getSubRuleJson(form, index) {
+            let obj = {};
+            if (!index) index = "1";
+            console.log("deal index:" + index);
+            let elements = $(form).find("[data-rule-index='" + index + "']").filter("input, select");
+//            console.log(elements);
+            elements.each(function (index, el) {
+                let n = el.name, t = el.type, tag = el.tagName.toLowerCase();
+                console.log("deal tag:" + tag);
+                if (typeof successful === 'undefined') {
+                    successful = true;
+                }
+                /* eslint-disable no-mixed-operators */
+                if (successful && (!n || el.disabled || t === 'reset' || t === 'button' ||
+                        (t === 'checkbox' || t === 'radio') && !el.checked ||
+                        (t === 'submit' || t === 'image') && el.form && el.form.clk !== el ||
+                        tag === 'select' && el.selectedIndex === -1)) {
+                    /* eslint-enable no-mixed-operators */
+                    console.log("pass:");
+                    console.log(el);
+                    return null;
+                }
+
+                let name = $(el).attr("data-rule-name");
+                let value = $(el).val();
+                console.log(name + " => " + value);
+                if (name) {
+                    obj[name] = value;
+                }
+            });
+            if (typeof(obj['type']) !== 'undefined' && obj['type'] === 'subrules') {
+                obj['subrules'] = Rules2Json(form, index);
+            }
+            return obj;
+        }
+
+        function Rules2Json(form, parentIndex) {
+            let subRules = [];
+            if (!parentIndex) parentIndex = "0";
+            console.log("deal parentIndex:" + parentIndex);
+            let subElements = $(form).find("[data-rule-parent-index='" + parentIndex + "']");
+//            console.log(subElements);
+            subElements.each(function (index, el) {
+                let subIndex = $(el).attr("data-rule-index");
+                let subRule = getSubRuleJson(form, subIndex);
+                subRules.push(subRule);
+            });
+            return subRules;
+        }
+
+        function appendSubRuleOrRules(el, type) {
+            let $parentRulesContainer = $(el).parent().parent().prev(".J_container_subrules");
+            //管理level
+            let $level = $parentRulesContainer.attr("data-rule-level");
+            $level++;
+            //管理index
+            let $nextIndex = $parentRulesContainer.attr("data-rule-next-index");
+            let $parentIndex = $parentRulesContainer.attr("data-rule-index");
+            $subIndex = $parentIndex + '.' + $nextIndex;
+            $nextIndex++;
+            $parentRulesContainer.attr("data-rule-next-index", $nextIndex);
+            $tpl = (type === 'restriction') ? $subRuleTpl : $subRulesTpl;
+
+            $parentRulesContainer.append($tpl.render({
+                index: $subIndex,
+                parentIndex: $parentIndex,
+                level: $level,
+                factorList: $factorList
+            }));
+            form.render();
+            element.init();
+            freshListener();
+        }
+
+        function freshListener() {
+            $('.J_add_subrule, .J_add_subrules, .J_add_rule, .rule_delete_btn, .logicOperator').unbind();
+            $('.rule_delete_btn').on('click', function () {
+                let type = $(this).parent('.J_append_item').attr("data-rule-type");
+                if (type === 'rule') {
+                    let parent = $(this).parent('.J_append_item');
+                    let _id = $(parent).find("form ._id").val();
+                    if (_id) {
+                        layer.confirm('confirm delete?', function (index) {
+                            layer.alert("call delete: " + _id);
+                            // your ajax code
+                        });
+                    } else {
+                        $(this).parent('.J_append_item').remove();
+                    }
+                } else {
+                    $(this).parent('.J_append_item').remove();
+                }
+            });
+            $('.J_add_rule').on('click', function () {
+                appendRule();
+            });
+            $('.J_add_subrule').on('click', function () {
+                appendSubRuleOrRules(this, 'restriction');
+            });
+            $('.J_add_subrules').on('click', function () {
+                appendSubRuleOrRules(this, 'subrules');
+            });
+            $('.logicOperator').on('change', function () {
+                let parent = $(this).parents('.layui-inline')[0];
+                let target = $(parent).next().next().children()[0];
+                if ($(this).val() === "between" || $(this).val() === "notbetween") {
+                    $(target).attr("type", "text");
+                }
+                else {
+                    $(target).attr("type", "hidden");
+                }
+
+            });
+
+            //监听提交
+            form.on('submit', function (data) {
+                var subRulesJsonString = JSON.stringify(getSubRuleJson(data.form), null, "  ");
+                alert("Malcolm Rules JSON: \n " + subRulesJsonString);
+                // your ajax code
+                return false;
+            });
+        }
+
+        function ruleFormInit() {
+            var $container = $('.J_container_rules');
+            $container.children().remove();
+            $ruleRefreshBtn.addClass("layui-anim layui-anim-rotate layui-anim-loop");
+            $.ajax({
+                url: "api/rules.json",
+                type: "GET",
+                success: function (ret) {
+//                    layer.alert(ret.msg);
+                    var rulesArray = ret.data;
+                    if (rulesArray.length <= 0) {
+                        appendRule();
+                    } else {
+                        for (var idx in rulesArray) {
+                            appendRule(rulesArray[idx]);
+                        }
+                    }
+                },
+                error: function () {
+                    layer.alert('Network Error~');
+                },
+                complete: function () {
+                }
+            });
+        }
+
+        ruleFormInit();
+        freshListener();
+    });
+</script>
+
+</body>
+</html>

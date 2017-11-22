@@ -1,0 +1,144 @@
+{
+    "code": 0,
+    "msg": "success",
+    "data": [
+    {
+        "_id": {
+            "$id": "59effdff31956002020041a8"
+        },
+        "strategyId": {
+            "$id": "59e95b2561a53946d57fc442"
+        },
+        "state": 1,
+        "name": "Test Rule",
+        "score": 30,
+        "subRules": {
+            "type": "subrules",
+            "logic": "and",
+            "subrules": [
+                {
+                    "type": "restriction",
+                    "introduce": "some information here",
+                    "factorId": "59cb754b61a5396edb381983",
+                    "logicOperator": "lessThan",
+                    "leftLimit": "5",
+                    "rightLimit": "50"
+                },
+                {
+                    "type": "subrules",
+                    "logic": "or",
+                    "subrules": [
+                        {
+                            "type": "restriction",
+                            "introduce": "some information here",
+                            "factorId": "59cb754b61a5396edb381983",
+                            "logicOperator": "equal",
+                            "leftLimit": "30",
+                            "rightLimit": ""
+                        },
+                        {
+                            "type": "restriction",
+                            "introduce": "some information here",
+                            "factorId": "59cb75a161a5396ee149dac5",
+                            "logicOperator": "greaterThan",
+                            "leftLimit": "20",
+                            "rightLimit": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "_id": {
+            "$id": "59f061b361a53946e7747ab2"
+        },
+        "strategyId": {
+            "$id": "59e95b2561a53946d57fc442"
+        },
+        "state": 1,
+        "name": "complex rule",
+        "score": 90,
+        "subRules": {
+            "type": "subrules",
+            "logic": "and",
+            "subrules": [
+                {
+                    "type": "restriction",
+                    "introduce": "some information here",
+                    "factorId": "59ca09d131956082110041a7",
+                    "logicOperator": "between",
+                    "leftLimit": "4",
+                    "rightLimit": "10"
+                },
+                {
+                    "type": "restriction",
+                    "introduce": "some information here",
+                    "factorId": "59cb75a161a5396ee149dac5",
+                    "logicOperator": "greaterThan",
+                    "leftLimit": "3",
+                    "rightLimit": ""
+                },
+                {
+                    "type": "subrules",
+                    "logic": "or",
+                    "subrules": [
+                        {
+                            "type": "restriction",
+                            "introduce": "some information here",
+                            "factorId": "59c8a24061a5396eb0761703",
+                            "logicOperator": "greaterThan",
+                            "leftLimit": "2",
+                            "rightLimit": ""
+                        },
+                        {
+                            "type": "subrules",
+                            "logic": "and",
+                            "subrules": [
+                                {
+                                    "type": "restriction",
+                                    "introduce": "some information here",
+                                    "factorId": "59cb75a161a5396ee149dac5",
+                                    "logicOperator": "greaterEqualThan",
+                                    "leftLimit": "2",
+                                    "rightLimit": ""
+                                },
+                                {
+                                    "type": "restriction",
+                                    "introduce": "some information here",
+                                    "factorId": "59ca09d131956082110041a7",
+                                    "logicOperator": "greaterThan",
+                                    "leftLimit": "2",
+                                    "rightLimit": ""
+                                },
+                                {
+                                    "type": "subrules",
+                                    "logic": "or",
+                                    "subrules": [
+                                        {
+                                            "type": "restriction",
+                                            "introduce": "some information here",
+                                            "factorId": "59c8a24061a5396eb0761703",
+                                            "logicOperator": "between",
+                                            "leftLimit": "1",
+                                            "rightLimit": "5"
+                                        },
+                                        {
+                                            "type": "restriction",
+                                            "introduce": "some information here",
+                                            "factorId": "59cc96fc61a5396ee4234a43",
+                                            "logicOperator": "greaterEqualThan",
+                                            "leftLimit": "2",
+                                            "rightLimit": ""
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]
+}
