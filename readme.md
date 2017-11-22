@@ -52,4 +52,4 @@ This editor just is a example, you need merge this code to your project.
 
 ## Web Editor UI
 
-![web ui](malcolm-rule-web-editor/assets/ui.png)
+![web ui](https://raw.githubusercontent.com/KrisBobLea/malcolm-rule-web-editor/master/assets/ui.png)
