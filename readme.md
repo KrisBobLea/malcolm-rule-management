@@ -15,7 +15,7 @@
 ### Scenes to be used
 Risk control, online activities, points issued and other systems need to flexibly configure the complex rules.
 
-## How about Malcolm Rules Json looks like?
+## How Malcolm Rules Json looks like?
 
 ```json
 {
