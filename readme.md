@@ -1,4 +1,4 @@
-# Malcolm Rules Editor
+# Malcolm Rules Management (Web Editor)
 
 ## What is Malcolm Rules?
 
